@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>tung | Translate from Images</title> 
+
+        <!-- Fonts -->
+        <link rel="preconnect" href="https://fonts.bunny.net">
+        <link href="https://fonts.bunny.net/css?family=figtree:400,600&display=swap" rel="stylesheet" />
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+
+        <!-- Styles -->
+        <style>
+        </style>
+
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    </head>
+    <body class="antialiased bg-dark text-white min-vh-100  d-flex flex-column ">
+        <a href="index.html" class="text-white text-decoration-none" style="margin-left: 1.5rem; margin-right: 1.5rem; margin-top: 1.5rem;">
+            <div style="display: flex; align-items: center;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>
+                </svg>
+                <span class="ms-1" style="font-size: 1.5rem;">back</span>
+            </div>
+        </a>
+        <div class="d-flex flex-column justify-content-center align-items-center ">
+            <h1 class="display-5">tung</h1>
+            <p class="lead mb-4">translate texts from images</p>
+        <form action="" method="post" enctype="multipart/form-data" style="height: 75vh;" class="w-75 d-flex flex-column justify-content-center">
+            <div class="d-flex">
+                <div class="w-50 h-50">
+                    <div class="input-group p-3">
+                        <input type="file" name="toText" id="toText" class="form-control bg-dark text-white" accept="image/jpeg">
+                        <button type="submit" class="btn btn-primary" id="send">Upload</button>
+                    </div>
+                    <div id="preview" class="w-50 mx-auto d-flex align-items-center justify-content-center"></div>
+
+                    <script>
+                        document.getElementById('toText').addEventListener('change', function(event) {
+                            const file = event.target.files[0];
+                            const preview = document.getElementById('preview');
+
+                            if (file) {
+                                const reader = new FileReader();
+                                reader.onload = function(e) {
+                                    preview.innerHTML = `<img src="${e.target.result}" alt="Image Preview" class="img-fluid" />`;
+                                };
+                                reader.readAsDataURL(file);
+                            } else {
+                                preview.innerHTML = '';
+                            }
+                        });
+                    </script>
+                </div>
+                <div class="d-flex flex-column w-50">
+                    <div class="input-group p-3">
+                        <label class="input-group-text" for="toLang">Translate to</label>
+                        <select class="form-select bg-dark text-white" id="toLang" name="toLang">
+                            <option value="en">English</option>
+                            <option value="es">Spanish</option>
+                            <option value="fr">French</option>
+                            <option value="de">German</option>
+                            <option value="zh">Chinese</option>
+                            <option value="ja">Japanese</option>
+                            <option value="hi">Hindi</option>
+                            <option value="ar">Arabic</option>
+                            <option value="pt">Portuguese</option>
+                            <option value="ru">Russian</option>
+                        </select>
+                    </div>
+                    <div class="overflow-auto bg-secondary border-secondary-subtle p-3 rounded" style="height: 50vh;">
+                        <p class="text-break" id="response">
+                            Choose a Photo then Upload to Translate
+                        </p>
+                    </div>  
+                </div>  
+            </div>
+            <small class="px-3 text-secondary">*tung only supports .jpg and <a href="https://en.wikipedia.org/wiki/List_of_Latin-script_letters">latin-script characters</a></small>
+            <div>
+            </div>
+        </form>
+        <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    </div>
+    </body>
+    <script>
+        document.querySelector("form").addEventListener("submit", async function (e) {
+            e.preventDefault();
+            
+            const submitButton = this.querySelector('button[type=submit]');
+            const responseElement = document.getElementById('response');
+            const fileInput = document.getElementById('toText');
+            const languageSelect = document.getElementById('toLang');
+    
+            // Update UI to show loading state
+            submitButton.disabled = true;
+            submitButton.textContent = 'Translating...';
+            responseElement.innerHTML = 'Awaiting response...';
+    
+            // Get the uploaded file
+            const file = fileInput.files[0];
+            if (!file) {
+                responseElement.innerHTML = "No file selected!";
+                submitButton.disabled = false;
+                submitButton.textContent = 'Translate';
+                return;
+            }
+    
+            try {
+                // Step 1: OCR API Call
+                const ocrResponse = await fetch("https://api.ocr.space/parse/image", {
+                    method: "POST",
+                    headers: {
+                        "apikey": "K88347887688957", // Replace with your actual OCR.space API key
+                    },
+                    body: new FormData(this), // Send the form data directly
+                });
+    
+                const ocrData = await ocrResponse.json();
+                const extractedText = ocrData.ParsedResults?.[0]?.ParsedText || "";
+    
+                if (!extractedText) {
+                    console.log("OCR Response:", JSON.stringify(ocrData, null, 2));
+                    throw new Error("No text found in the uploaded image.");
+                }
+    
+                // Step 2: Translation API Call
+                const translationResponse = await fetch(`https://api.apilayer.com/language_translation/translate`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "apikey": "yF9GYCbZJxcGrKUvZ5tsyRvDKEk3R617", // Replace with your actual Apilayer API key
+                    },
+                    body: JSON.stringify({
+                        text: extractedText,
+                        target: languageSelect.value,
+                    }),
+                });
+    
+                const translationData = await translationResponse.json();
+                const translatedText = translationData.translations?.[0]?.translation || "";
+    
+                // Display Results
+                responseElement.innerHTML = `
+                    <p><strong>Extracted Text:</strong> ${extractedText}</p>
+                    <p><strong>Translated Text:</strong> ${translatedText}</p>
+                `;
+    
+            } catch (error) {
+                // Handle errorsx`
+                responseElement.innerHTML = `Error: ${error.message}`;
+            } finally {
+                // Reset the UI
+                submitButton.disabled = false;
+                submitButton.textContent = 'Translate';
+            }
+        });
+    
+        document.querySelector('#toText').addEventListener("change", function () {
+            document.querySelector('button[type=submit]').disabled = this.files.length === 0;
+        });
+    </script>
+    
+</html>

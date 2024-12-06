@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <title>Compose-It | Generate Faces</title>
+
+        <!-- Fonts -->
+        <link rel="preconnect" href="https://fonts.bunny.net">
+        <link href="https://fonts.bunny.net/css?family=figtree:400,600&display=swap" rel="stylesheet" />
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+        <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+        <!-- Styles -->
+        <style>
+            ::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+            }
+
+            ::-webkit-scrollbar-track {
+            -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+            -webkit-border-radius: 10px;
+            border-radius: 10px;
+            }
+
+            ::-webkit-scrollbar-thumb {
+            -webkit-border-radius: 10px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.3);
+            -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.5);
+            }
+
+            ::-webkit-scrollbar-thumb:window-inactive {
+            background: rgba(255, 255, 255, 0.3);
+            }
+
+        </style>
+    </head>
+    <body class="antialiased bg-dark text-white min-vh-100 d-flex flex-column">
+        <a href="index.html" class="text-white text-decoration-none" style="margin-left: 1.5rem; margin-right: 1.5rem; margin-top: 1.5rem;">
+            <div style="display: flex; align-items: center;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>
+                </svg>
+                <span class="ms-1" style="font-size: 1.5rem;">back</span>
+            </div>
+        </a>
+        <div class="d-flex flex-column justify-content-center align-items-center">
+        <div class="container d-flex flex-row">
+            <div class="col">
+                <form>
+                    <h1 class="display-5">Compose-It</h1>
+                    <p class="lead mb-4">generate faces</p>
+                    <div style="overflow-y: auto; max-height: 350px;" class="pe-2">
+                        <!-- RACE -->
+                        <div class="input-group pt-3">
+                            <label class="input-group-text fw-bold">Race</label>
+                            <input type="text" class="form-control bg-dark text-white" id="inptRace" name="inptRace">
+                        </div>
+                        <small class="text-faded fst-italic">White? Asian? African-American?</small>
+
+                        <!-- FACE SHAPE -->
+                        <div class="input-group pt-3">
+                            <label class="input-group-text fw-bold">Face Shape</label>
+                            <input type="text" class="form-control bg-dark text-white" id="inptFaceShape" name="inptFaceShape">
+                        </div>
+                        <small class="text-faded fst-italic">oval? square? rounded?</small>
+
+                        <!-- SKIN TONE -->
+                        <div class="input-group pt-3">
+                            <label class="input-group-text fw-bold">Skin Tone</label>
+                            <input type="text" class="form-control bg-dark text-white" id="inptSkinTone" name="inptSkinTone">
+                        </div>
+                        <small class="text-faded fst-italic">fair? dark? tanned?</small>
+
+                        <!-- EYES -->
+                        <div class="input-group pt-3">
+                            <label class="input-group-text fw-bold">Eyes</label>
+                            <input type="text" class="form-control bg-dark text-white" id="inptEyes" name="inptEyes">
+                        </div>
+                        <small class="text-faded fst-italic">blue? brown and wide? emerald and narrow?</small>
+                        
+                        <!-- NOSE -->
+                        <div class="input-group pt-3">
+                            <label class="input-group-text fw-bold">Nose</label>
+                            <input type="text" class="form-control bg-dark text-white" id="inptNose" name="inptNose">
+                        </div>
+                        <small class="text-faded fst-italic">large nostril? prominent bridge? both?</small>
+
+                        <!-- MOUTH -->
+                        <div class="input-group pt-3">
+                            <label class="input-group-text fw-bold">Mouth</label>
+                            <input type="text" class="form-control bg-dark text-white" id="inptMouth" name="inptMouth">
+                        </div>
+                        <small class="text-faded fst-italic">full? thin? wide? overbite?</small>
+
+                        <!-- CHIN -->
+                        <div class="input-group pt-3">
+                            <label class="input-group-text fw-bold">Chin</label>
+                            <input type="text" class="form-control bg-dark text-white" id="inptChin" name="inptChin">
+                        </div>
+                        <small class="text-faded fst-italic">pointed? square? receding?</small>
+
+                        <!-- EARS -->
+                        <div class="input-group pt-3">
+                            <label class="input-group-text fw-bold">Ears</label>
+                            <input type="text" class="form-control bg-dark text-white" id="inptEars" name="inptEars">
+                        </div>
+                        <small class="text-faded fst-italic">large lobe? prominent ears?</small>
+
+                        <!-- HAIR -->
+                        <div class="input-group pt-3">
+                            <label class="input-group-text fw-bold">Hair</label>
+                            <input type="text" class="form-control bg-dark text-white" id="inptHair" name="inptHair">
+                        </div>
+                        <small class="text-faded fst-italic">bald? smooth? long? curly? receding hairline?</small>
+
+                        <!-- ACCESSORIES -->
+                        <div class="input-group pt-3">
+                            <label class="input-group-text fw-bold">Accessories</label>
+                            <input type="text" class="form-control bg-dark text-white" id="inptAccessories" name="inptAccesories">
+                        </div>
+                        <small class="text-faded fst-italic">earrings? glasses? earrings and glasses? </small>
+                    </div>
+                    <div class="d-grid gap-2 pt-3">
+                        <button type="submit" id="submit" class="btn btn-primary btn-lg">Generate Face</button>
+                    </div>
+                </form>
+            </div>
+            <div class="col d-flex justify-content-center align-items-center">
+                <div class="d-flex flex-column align-items-center w-75">
+                    <a href="none.png" download class="w-100">
+                        <img src="none.png" alt="Image" class="mx-auto my-auto d-block w-100" id="outFace">
+                    </a>
+                    <small class="text-faded fst-italic">click image to download</small>
+                </div>
+            </div> 
+        </div>
+        </div>
+        
+        <script>
+            document.querySelector('form').addEventListener('submit', function (event) {
+            event.preventDefault(); // Prevent form submission
+
+            const formData = {};
+            const inputs = document.querySelectorAll('input');
+            let formDataString = ''; // Simulating PHP logic here
+
+            inputs.forEach(input => {
+                const key = input.id.replace('inpt', '');
+                const value = input.value.trim().replace(/ /g, '-');
+                if (value !== '') {
+                    formData[key] = value;
+                    formDataString += `${key}:-${value}-`;
+                }
+            });
+
+            formDataString = formDataString.slice(0, -1); // Remove trailing dash
+
+            const apiURL = 'https://image.pollinations.ai/prompt/';
+            const newImageUrl = `${apiURL}full-headshot-composite-drawing-following-these-descriptions:-${formDataString}-in-a-white-background`;
+
+            const imgElement = document.getElementById('outFace');
+            imgElement.src = './assets/generating.png'; // Set "generating" image immediately
+
+            const submitButton = document.querySelector('button[type="submit"]');
+            submitButton.disabled = true;
+            submitButton.textContent = 'Generating...';
+
+            console.log("Generating Face...");
+
+            // Simulate fetching the image directly from the external API
+            fetch(newImageUrl)
+                .then(response => {
+                    if (response.ok) {
+                        imgElement.src = newImageUrl; // Update the image URL
+                        const anchorElement = document.querySelector('a');
+                        anchorElement.href = newImageUrl;
+                        console.log("Face Generated!");
+                    } else {
+                        console.error('Error generating image: Failed to load URL');
+                        imgElement.src = './assets/generatingerror.png';
+                    }
+                    submitButton.textContent = 'Generate Face';
+                    submitButton.disabled = false;
+                })
+                .catch(error => {
+                    console.error('Error generating image:', error);
+                    imgElement.src = './assets/generatingerror.png';
+                    submitButton.textContent = 'Generate Face';
+                    submitButton.disabled = false;
+                });
+        });
+        </script>
+
+    </body>
+</html>
